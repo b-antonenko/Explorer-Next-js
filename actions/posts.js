@@ -1,6 +1,7 @@
 'use server';
+import { revalidatePath } from "next/cache";
 import { uploadImage } from "@/lib/cloudinary";
-import { storePost } from "@/lib/posts";
+import { storePost, updatePostLikeStatus } from "@/lib/posts";
 import { redirect } from "next/navigation";
 
 export const createPost = async (prevState, formData) => {
@@ -28,5 +29,11 @@ export const createPost = async (prevState, formData) => {
 
     await storePost({ imageUrl: url, content, title, userId: 1 });
 
+    revalidatePath('/', 'layout');
     redirect('/feed');
+  };
+
+  export const togglePostLike = async (postId) => {
+    updatePostLikeStatus(postId, 2);
+    revalidatePath('/', 'layout');
   };
